@@ -1,0 +1,19 @@
+name: Publish Docker
+
+on: [push]
+
+env:
+  IMAGE_NAME: python
+  IMAGE_TAG: latest
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: login github registry
+      run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
+    - name: Build image
+      run: docker build -t docker.pkg.github.com/${{ github.repository }}/${IMAGE_NAME}:${IMAGE_TAG} .
+    - name: Push image to GitHub Registry
+      run: docker push docker.pkg.github.com/${{ github.repository }}/${IMAGE_NAME}:${IMAGE_TAG}
